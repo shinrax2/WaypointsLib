@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<mod 
+    name="WaypointsLib"
+    description="Libary to add custom Waypoints"
+    author="shinrax2 and Bangl"
+    version="0.1"
+    contact="https://github.com/shinrax2/WaypointsLib"
+    disable_safe_mode="true"
+>
+
+    <updates>
+        <update
+            identifier="52686"
+            provider="modworkshop">
+        </update>
+    </updates>
+
+    <hooks>
+        <post hook_id="lib/setups/setup" script_path="lua/setup.lua" />
+        <post hook_id="lib/managers/hudmanagerpd2" script_path="lua/hudmanagerpd2.lua" />
+    </hooks>
+</mod>
