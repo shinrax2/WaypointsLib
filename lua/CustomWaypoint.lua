@@ -129,6 +129,8 @@ function CustomWaypoint:init(id, parent, data)
         end
     end
 
+    self:_setup_arrow(data, self._base_size, self._base_scale)
+
     self:_arrange()
 end
 
@@ -366,7 +368,7 @@ function CustomWaypoint:update(t, dt, cam, cam_fwd, hud, workspace)
     end
 
     if is_enabled and self._state == (on_screen and "on_screen" or "off_screen") then
-        self:_update_visuals(mvector3.x(screen_pos), mvector3.y(screen_pos), math.acos(dot))
+        self:_update_visuals(mvector3.x(screen_pos), mvector3.y(screen_pos), math.acos(dot), dir_normalized)
     elseif is_enabled and ( on_screen or self._settings.show_offscreen ) then
         if self._state == "on_screen" then
             self._state = "transition_off_screen"
@@ -379,7 +381,7 @@ function CustomWaypoint:update(t, dt, cam, cam_fwd, hud, workspace)
         local x_diff, y_diff = mvector3.x(screen_pos) - x, mvector3.y(screen_pos) - y
         local x_move, y_move = x_diff / self._transition_time * dt + x, y_diff / self._transition_time * dt + y
         self._transition_time = self._transition_time - dt
-        self:_update_visuals(x_move, y_move, math.acos(dot))
+        self:_update_visuals(x_move, y_move, math.acos(dot), dir_normalized)
 
         if self._transition_time <= 0 then
             self._transition_time = nil
@@ -391,6 +393,7 @@ function CustomWaypoint:update(t, dt, cam, cam_fwd, hud, workspace)
         end
     elseif self._panel:visible() then
         self._panel:hide()
+        self._components.arrow:hide()
     end
 
 end
@@ -425,9 +428,12 @@ function CustomWaypoint:_update_distance(value)
     end
 end
 
-function CustomWaypoint:_update_visuals(x, y, angle)
+	function CustomWaypoint:_update_visuals(x, y, angle, arrow_direction)
     if self:_update_component_visuals(self._panel, self._settings, angle) then	--Main panel
         local rearrange = false
+        if self._settings.arrow then
+            self._settings.arrow.show = not self:is_on_screen()
+        end
 
         for name, component in pairs(self._components) do
             if component and self._settings[name] then
@@ -441,8 +447,15 @@ function CustomWaypoint:_update_visuals(x, y, angle)
         end
 
         self._panel:set_center(x, y)
+
+        if self._components.arrow and self._components.arrow:visible() then
+            local arrow_angle = math.X:angle(arrow_direction) * math.sign(arrow_direction.y)
+            self._components.arrow:set_rotation(arrow_angle + 90)
+            self._components.arrow:set_center(x + arrow_direction.x * (self._panel:w() + 3), y + arrow_direction.y * (self._panel:h() + 3))
+        end
     elseif not self._settings.show_offscreen then
         self._state = "on_screen"
+        self._components.arrow:hide()
     end
 
 end
@@ -601,6 +614,17 @@ function CustomWaypoint:_setup_image_component(name, data, base_size, base_scale
         visible = show,
         blend_mode = data[name].blend_mode or "add",
     })
+end
+
+function CustomWaypoint:_setup_arrow(data, base_size, base_scale)
+    data.arrow = data.arrow or {}
+    data.arrow.std_wp = "map_waypoint_pov_out"
+    data.arrow.show_offscreen = (data.arrow.show_offscreen ~= false)
+    data.arrow.scale = 2
+
+    self:_setup_image_component("arrow", data, base_size, base_scale, self._panel:parent())
+
+    self._components.arrow:set_rotation(360)
 end
 
 function CustomWaypoint:_setup_icon_component(name, data, base_size, base_scale)
