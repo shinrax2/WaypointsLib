@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
-<mod 
+<mod
     name="WaypointsLib"
-    description="Libary to add custom Waypoints"
-    author="shinrax2 and Bangl"
+    description="Library to add custom Waypoints"
+    author="shinrax2 and BangL (credits to Seven and Kamikaze94)"
     version="0.2"
     contact="https://github.com/shinrax2/WaypointsLib"
     disable_safe_mode="true"
@@ -19,6 +19,7 @@
 
     <hooks>
         <post hook_id="lib/setups/setup" script_path="lua/setup.lua" />
+        <post hook_id="core/lib/managers/coreworldcollection" script_path="lua/coreworldcollection.lua" />
         <post hook_id="lib/managers/hudmanagerpd2" script_path="lua/hudmanagerpd2.lua" />
     </hooks>
 </mod>
