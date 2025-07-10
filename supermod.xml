@@ -3,7 +3,7 @@
     name="WaypointsLib"
     description="Libary to add custom Waypoints"
     author="shinrax2 and Bangl"
-    version="0.1"
+    version="0.2"
     contact="https://github.com/shinrax2/WaypointsLib"
     disable_safe_mode="true"
     is_library="true"
