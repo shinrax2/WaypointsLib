@@ -108,6 +108,7 @@ function CustomWaypoint:init(id, parent, data)
     self._component_order = data.component_order or {}		--Top to bottom, left to right
     self._settings = {
         show = true,
+        position = data.position,
         show_offscreen = data.show_offscreen and true or false,
         radius_offscreen = data.radius_offscreen or 200,
         transition_duration = data.transition_duration or 0.3,
@@ -299,7 +300,7 @@ function CustomWaypoint:update(t, dt, cam, cam_fwd, hud, workspace)
         return self:delete()
     end
 
-    self._position = self._unit and (self._unit:movement() and self._unit:movement():m_head_pos() or self._unit:interaction() and self._unit:interaction():interact_position() or self._unit:position()) or self._position
+    self._position = self._unit and (self._unit:movement() and self._unit:movement():m_head_pos() or self._unit:interaction() and self._unit:interaction():interact_position() or self._unit:position()) or self._settings["position"]
 
     for name, _ in pairs(self._duration_components) do
         if self._settings[name] and self._settings[name].value then
