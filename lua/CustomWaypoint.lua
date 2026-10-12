@@ -300,7 +300,17 @@ function CustomWaypoint:update(t, dt, cam, cam_fwd, hud, workspace)
         return self:delete()
     end
 
-    self._position = self._unit and (self._unit:movement() and self._unit:movement():m_head_pos() or self._unit:interaction() and self._unit:interaction():interact_position() or self._unit:position()) or self._settings["position"]
+    -- a unit may have a movement/interaction extension that does not carry the
+    -- method we ask for, so check for the method itself, not just the extension
+    if self._unit then
+        local movement = self._unit:movement()
+        local interaction = self._unit:interaction()
+        self._position = movement and movement.m_head_pos and movement:m_head_pos()
+            or interaction and interaction.interact_position and interaction:interact_position()
+            or self._unit:position()
+    else
+        self._position = self._settings["position"]
+    end
 
     for name, _ in pairs(self._duration_components) do
         if self._settings[name] and self._settings[name].value then
